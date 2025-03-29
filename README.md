@@ -10,15 +10,14 @@ This repository serves as a personal knowledge base and a resource for others in
 - Exploits used 💥
 - Commands & explanations 💻
 
-## 📂 Walkthroughs
+## 📂 Walkthroughs Structure
 Each TryHackMe room has its own dedicated folder, containing:
-- `walkthrough.md` → Step-by-step guide
-- `proof.txt` → Capture the flag proofs (if applicable)
-- `scripts/` → Any custom scripts used
+- `room_name.txt` → Step-by-step guide
+- `README.md` → Summary and key insights
 
 ## 🚀 Getting Started
 If you're following along, you may need:
-- A **TryHackMe** account → [https://tryhackme.com/](https://tryhackme.com/)
+- A **TryHackMe** account → [https://tryhackme.com/p/c1ph3r1337]([https://tryhackme.com/](https://tryhackme.com/p/c1ph3r1337))
 - Kali Linux / Parrot OS
 - Tools like **nmap, gobuster, Hydra, Netcat**
 
@@ -33,7 +32,7 @@ These walkthroughs are for **educational purposes only.** Do not use this knowle
 
 ## 🔗 Connect
 If you find these helpful, consider following me!
-- **TryHackMe**: [Your Profile Link]
-- **GitHub**: [Your GitHub Link]
+- **TryHackMe**: [https://tryhackme.com/p/c1ph3r1337]
+- **GitHub**: [https://github.com/c1ph3r-1337/]
 
 Happy hacking! 🏴‍☠️
