@@ -1,5 +1,5 @@
 # **Mr. Robot CTF Walkthrough** 🏴‍☠️  
-🎯 **Completed by: C1ph3r1337**  
+🎯 **Completed by: c1ph3r1337**  
 
 ## **1️⃣ Directory Bruteforcing (Gobuster)**  
 🔹 **Key 1st**  
