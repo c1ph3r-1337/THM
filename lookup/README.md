@@ -147,12 +147,10 @@ cat user.txt
 
 ### 🏅 14. Root Flag
 ```sh
-su -
+look '' /root/root.txt
 ```
 🔑 Password: `josemario.AKA(think)`
-```sh
-cat /root/root.txt
-```
+
 #### 📌 Output:
 ```sh
 5a285a9f257e45c68bb6c9f9f57d18e8
