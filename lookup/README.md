@@ -9,7 +9,7 @@
 
 ### 👥 2. User Enumeration (Custom Script)
 ```sh
-python3 script.py
+python3 lookup-enumeration.py
 ```
 
 ## 🔑 Credential Attacks
