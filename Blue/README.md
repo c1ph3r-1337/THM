@@ -159,4 +159,6 @@ Flag2 content: **flag{sam_database_elevated_access}** 🔒
 
 This walkthrough guides you through exploiting the **MS17-010 EternalBlue** vulnerability to gain access to a Windows machine, escalate privileges, dump passwords, crack hashes, and locate flags on the system. With persistence and the correct tools, lateral movement and privilege escalation are key to successfully solving the challenge. 🎉
 
+---
+
 📌 Created by c1ph3r1337 🕶️🔥
