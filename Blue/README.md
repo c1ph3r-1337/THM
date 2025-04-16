@@ -1,5 +1,5 @@
 
-# 🏆 CTF Walkthrough: MS17-010 Exploitation
+# 🏆 CTF Walkthrough: BLUE
 
 ## Table of Contents:
 1. [Recon 🔍](#recon)
