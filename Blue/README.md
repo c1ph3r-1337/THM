@@ -1,5 +1,5 @@
 
-# 🏆 CTF Walkthrough: BLUE
+# 🏆 THM CTF Walkthrough: BLUE
 
 ## Table of Contents:
 1. [Recon 🔍](#recon)
